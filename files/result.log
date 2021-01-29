@@ -1,0 +1,350 @@
+|> WITH echo $PWD; echo $OLDPWD; cd /; echo $PWD; echo $OLDPWD; unset PWD; cd /dev; echo $OLDPWD
+|  STATUS: expected 0 actual -11
+|---------------------------------------EXPECTED--------------------------------
+/home/user42/Bureau/minishell/test_cc/sandbox$
+$
+/$
+/home/user42/Bureau/minishell/test_cc/sandbox$
+$
+|---------------------------------------ACTUAL----------------------------------
+/home/user42/Bureau/minishell/test_cc/sandbox$
+$
+/$
+/home/user42/Bureau/minishell/test_cc/sandbox$
+================================================================================
+
+|> WITH env
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+$
+PATH=/home/user42/Bureau/minishell/test_cc/bin$
+PWD=/home/user42/Bureau/minishell/test_cc/sandbox$
+SHLVL=1$
+TERM=xterm-256color$
+_=/home/user42/Bureau/minishell/test_cc/bin/env
+|---------------------------------------ACTUAL----------------------------------
+$
+free(): double free detected in tcache 2
+================================================================================
+
+|> WITH [SETUP export A=a] env
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+$
+PATH=/home/user42/Bureau/minishell/test_cc/bin$
+PWD=/home/user42/Bureau/minishell/test_cc/sandbox$
+SHLVL=1$
+TERM=xterm-256color$
+_=/home/user42/Bureau/minishell/test_cc/bin/env
+|---------------------------------------ACTUAL----------------------------------
+$
+free(): double free detected in tcache 2
+================================================================================
+
+|> WITH [SETUP export A=a B=b C=c] env
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+$
+PATH=/home/user42/Bureau/minishell/test_cc/bin$
+PWD=/home/user42/Bureau/minishell/test_cc/sandbox$
+SHLVL=1$
+TERM=xterm-256color$
+_=/home/user42/Bureau/minishell/test_cc/bin/env
+|---------------------------------------ACTUAL----------------------------------
+$
+free(): double free detected in tcache 2
+================================================================================
+
+|> WITH [SETUP export A=a B=b C=c] env | cat -e
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+$
+PATH=/home/user42/Bureau/minishell/test_cc/bin$$
+PWD=/home/user42/Bureau/minishell/test_cc/sandbox$$
+SHLVL=1$$
+TERM=xterm-256color$$
+_=/home/user42/Bureau/minishell/test_cc/bin/env$
+|---------------------------------------ACTUAL----------------------------------
+$
+free(): double free detected in tcache 2
+================================================================================
+
+|> WITH export A B C; env
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+$
+PATH=/home/user42/Bureau/minishell/test_cc/bin$
+PWD=/home/user42/Bureau/minishell/test_cc/sandbox$
+SHLVL=1$
+TERM=xterm-256color$
+_=/home/user42/Bureau/minishell/test_cc/bin/env
+|---------------------------------------ACTUAL----------------------------------
+$
+free(): double free detected in tcache 2
+================================================================================
+
+|> WITH unset PWD; pwd; echo $PWD
+|  STATUS: expected 0 actual -11
+|---------------------------------------EXPECTED--------------------------------
+/home/user42/Bureau/minishell/test_cc/sandbox$
+$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='a'] unset A; echo $A
+|  STATUS: expected 0 actual -11
+|---------------------------------------EXPECTED--------------------------------
+$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset A B C; echo $A$B$C
+|  STATUS: expected 0 actual -11
+|---------------------------------------EXPECTED--------------------------------
+$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset A 'asdf ' B ' asdf asdf asd f' ' asdf ' '' 'asdf ' C; echo $A$B$C
+|  STATUS: expected 0 actual -11
+|---------------------------------------EXPECTED--------------------------------
+minishell: unset: `asdf ': not a valid identifier$
+minishell: unset: ` asdf asdf asd f': not a valid identifier$
+minishell: unset: ` asdf ': not a valid identifier$
+minishell: unset: `': not a valid identifier$
+minishell: unset: `asdf ': not a valid identifier$
+$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset 'asdf ' B ' asdf asdf asd f' ' asdf ' '' 'asdf ' C; echo $A$B$C
+|  STATUS: expected 0 actual -11
+|---------------------------------------EXPECTED--------------------------------
+minishell: unset: `asdf ': not a valid identifier$
+minishell: unset: ` asdf asdf asd f': not a valid identifier$
+minishell: unset: ` asdf ': not a valid identifier$
+minishell: unset: `': not a valid identifier$
+minishell: unset: `asdf ': not a valid identifier$
+a$
+|---------------------------------------ACTUAL----------------------------------
+minishell: unset: `asdf ': not a valid identifier$
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset A 'asdf ' B ' asdf asdf asd f' ' asdf ' '' 'asdf '; echo $A$B$C
+|  STATUS: expected 0 actual -11
+|---------------------------------------EXPECTED--------------------------------
+minishell: unset: `asdf ': not a valid identifier$
+minishell: unset: ` asdf asdf asd f': not a valid identifier$
+minishell: unset: ` asdf ': not a valid identifier$
+minishell: unset: `': not a valid identifier$
+minishell: unset: `asdf ': not a valid identifier$
+c$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset A; echo $A$B$C
+|  STATUS: expected 0 actual -11
+|---------------------------------------EXPECTED--------------------------------
+bc$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset C; echo $A$B$C
+|  STATUS: expected 0 actual -11
+|---------------------------------------EXPECTED--------------------------------
+ab$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset A B C
+|  STATUS: expected 0 actual -11
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset A 'asdf ' B ' asdf asdf asd f' ' asdf ' '' 'asdf ' C
+|  STATUS: expected 1 actual -11
+|---------------------------------------EXPECTED--------------------------------
+minishell: unset: `asdf ': not a valid identifier$
+minishell: unset: ` asdf asdf asd f': not a valid identifier$
+minishell: unset: ` asdf ': not a valid identifier$
+minishell: unset: `': not a valid identifier$
+minishell: unset: `asdf ': not a valid identifier$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset 'asdf ' B ' asdf asdf asd f' ' asdf ' '' 'asdf ' C
+|  STATUS: expected 1 actual -11
+|---------------------------------------EXPECTED--------------------------------
+minishell: unset: `asdf ': not a valid identifier$
+minishell: unset: ` asdf asdf asd f': not a valid identifier$
+minishell: unset: ` asdf ': not a valid identifier$
+minishell: unset: `': not a valid identifier$
+minishell: unset: `asdf ': not a valid identifier$
+|---------------------------------------ACTUAL----------------------------------
+minishell: unset: `asdf ': not a valid identifier$
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset A 'asdf ' B ' asdf asdf asd f' ' asdf ' '' 'asdf '
+|  STATUS: expected 1 actual -11
+|---------------------------------------EXPECTED--------------------------------
+minishell: unset: `asdf ': not a valid identifier$
+minishell: unset: ` asdf asdf asd f': not a valid identifier$
+minishell: unset: ` asdf ': not a valid identifier$
+minishell: unset: `': not a valid identifier$
+minishell: unset: `asdf ': not a valid identifier$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='a' B='b' C='c'] unset A
+|  STATUS: expected 0 actual -11
+================================================================================
+
+|> WITH echo bonjour | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+bonjour$$$$$$$$
+|---------------------------------------ACTUAL----------------------------------
+bonjour$$$$$$$$
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH echo|
+|  STATUS: expected 2 actual -6
+================================================================================
+
+|> WITH echo |
+|  STATUS: expected 2 actual -6
+================================================================================
+
+|> WITH echo | 
+|  STATUS: expected 2 actual -6
+================================================================================
+
+|> WITH echo a | export A=a; echo $A
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+$
+|---------------------------------------ACTUAL----------------------------------
+$
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH echo bonjour | asdf
+|  STATUS: expected 127 actual -6
+|---------------------------------------EXPECTED--------------------------------
+minishell: asdf: command not found$
+|---------------------------------------ACTUAL----------------------------------
+minishell: asdf: command not found$
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH asdf | echo bonjour
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+minishell: asdf: command not found$
+bonjour$
+|---------------------------------------ACTUAL----------------------------------
+minishell: asdf: command not found$
+bonjour$
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH echo bonjour  | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+bonjour$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+|---------------------------------------ACTUAL----------------------------------
+bonjour$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH echo bonjour  | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+bonjour$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+|---------------------------------------ACTUAL----------------------------------
+bonjour$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH ls asdfasdf | echo a
+|---------------------------------------EXPECTED--------------------------------
+a$
+ls: cannot access 'asdfasdf': No such file or directory$
+|---------------------------------------ACTUAL----------------------------------
+ls: cannot access 'asdfasdf': No such file or directory$
+a$
+================================================================================
+
+|> WITH ls asdfasdf | echo a; echo b
+|---------------------------------------EXPECTED--------------------------------
+a$
+ls: cannot access 'asdfasdf': No such file or directory$
+b$
+|---------------------------------------ACTUAL----------------------------------
+ls: cannot access 'asdfasdf': No such file or directory$
+a$
+b$
+================================================================================
+
+|> WITH env; echo $_
+|  STATUS: expected 0 actual -6
+|---------------------------------------EXPECTED--------------------------------
+PWD=/home/user42/Bureau/minishell/test_cc/sandbox$
+TERM=xterm-256color$
+SHLVL=1$
+PATH=/home/user42/Bureau/minishell/test_cc/bin$
+_=/home/user42/Bureau/minishell/test_cc/bin/env$
+env$
+|---------------------------------------ACTUAL----------------------------------
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH [EXPORTS PATH='a:b:c:d:e:f:g:h:i:j:k:l:m:n:o:p:q:r:s:t:u:v:w:x:y:z'] whoami
+|  STATUS: expected 127 actual -6
+|---------------------------------------EXPECTED--------------------------------
+minishell: whoami: command not found$
+|---------------------------------------ACTUAL----------------------------------
+minishell: whoami: command not found$
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH unset PATH; whoami
+|  STATUS: expected 127 actual -11
+|---------------------------------------EXPECTED--------------------------------
+minishell: whoami: No such file or directory$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS PATH=':'] whoami
+|  STATUS: expected 127 actual -6
+|---------------------------------------EXPECTED--------------------------------
+minishell: whoami: command not found$
+|---------------------------------------ACTUAL----------------------------------
+minishell: whoami: command not found$
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH [EXPORTS PATH=':::::::::::::::::::'] whoami
+|  STATUS: expected 127 actual -6
+|---------------------------------------EXPECTED--------------------------------
+minishell: whoami: command not found$
+|---------------------------------------ACTUAL----------------------------------
+minishell: whoami: command not found$
+free(): double free detected in tcache 2$
+================================================================================
+
+|> WITH [EXPORTS A='fi le'] echo bonjour > $A
+|  STATUS: expected 1 actual 0
+|---------------------------------------EXPECTED--------------------------------
+minishell: $A: ambiguous redirect$
+|---------------------------------------ACTUAL----------------------------------
+================================================================================
+
+|> WITH [EXPORTS A='fi le'] echo bonjour > "$A"
+|# FILE fi le
+|---------------------------------------EXPECTED--------------------------------
+bonjour$
+|---------------------------------------ACTUAL----------------------------------
+FROM TEST: File not created
+================================================================================
+
