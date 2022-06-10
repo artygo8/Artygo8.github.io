@@ -1,0 +1,9 @@
+# RayTracing
+
+One of my first project, after 6months of training in C, was a small ray tracer that I was very proud of.
+
+You can get the code here:
+ - [miniRT](https://github.com/Artygo8/s19_cursus/tree/main/miniRT)
+
+And here is an example of a result:
+![Nine Spheres](./img/ninespheres.png)

@@ -1,0 +1,11 @@
+# Zsh
+
+Another day-to-day tool.
+Unix shell's are so practical, and `zsh` is my current choice.
+
+the shell is always my first approach to any programming problem.
+
+Here are some of my scripts:
+ - [42cursus_cloner](https://github.com/Artygo8/42cursus_cloner)
+ - [.my_bash_profile](https://github.com/Artygo8/.my_bash_profile)
+ - [kubernetesServicesStarter](https://github.com/Artygo8/s19_cursus/blob/main/ft_services/setup.sh)
