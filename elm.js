@@ -6714,35 +6714,15 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $elm$html$Html$i = _VirtualDom_node('i');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$arrowIcon = function (dir) {
+var $author$project$Main$directionToText = function (dir) {
 	if (!dir) {
-		return A2(
-			$elm$html$Html$i,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('material-icons arrow arrow-right')
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text('keyboard_arrow_right')
-				]));
+		return 'right';
 	} else {
-		return A2(
-			$elm$html$Html$i,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('material-icons arrow arrow-left')
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text('keyboard_arrow_left')
-				]));
+		return 'left';
 	}
 };
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$i = _VirtualDom_node('i');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
 };
@@ -6778,7 +6758,16 @@ var $author$project$Main$arrow = function (dir) {
 					]),
 				_List_fromArray(
 					[
-						$author$project$Main$arrowIcon(dir)
+						A2(
+						$elm$html$Html$i,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class(
+								'fa fa-chevron-' + $author$project$Main$directionToText(dir)),
+								$elm$html$Html$Attributes$class(
+								'arrow arrow-' + $author$project$Main$directionToText(dir))
+							]),
+						_List_Nil)
 					]))
 			]));
 };
@@ -6791,6 +6780,8 @@ var $elm$html$Html$Attributes$href = function (url) {
 };
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$cvButton = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
@@ -6826,6 +6817,7 @@ var $author$project$Main$cvButton = A2(
 						]))
 				]))
 		]));
+var $elm$core$Basics$not = _Basics_not;
 var $author$project$Main$faIconLink = F2(
 	function (iconName, link) {
 		return A2(
@@ -6870,7 +6862,7 @@ var $author$project$Main$pageFooter = A2(
 				]))
 		]));
 var $author$project$Main$myOptions = {
-	Q: $elm$core$Maybe$Just('python'),
+	Q: $elm$core$Maybe$Nothing,
 	U: $elm$core$Maybe$Just(
 		{aA: true, aU: true}),
 	al: false,
@@ -6878,15 +6870,30 @@ var $author$project$Main$myOptions = {
 };
 var $elm_explorations$markdown$Markdown$toHtmlWith = _Markdown_toHtml;
 var $author$project$Main$toMarkdown = function (userInput) {
-	return A3(
-		$elm_explorations$markdown$Markdown$toHtmlWith,
-		$author$project$Main$myOptions,
+	return A3($elm_explorations$markdown$Markdown$toHtmlWith, $author$project$Main$myOptions, _List_Nil, userInput);
+};
+var $author$project$Main$viewArticle = function (content) {
+	return A2(
+		$elm$html$Html$div,
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$class('article')
 			]),
-		userInput);
+		_List_fromArray(
+			[
+				$author$project$Main$toMarkdown(content)
+			]));
 };
+var $author$project$Main$viewInfo = A2(
+	$elm$html$Html$div,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('info w3-animate-fading')
+		]),
+	_List_fromArray(
+		[
+			$elm$html$Html$text('Press a letter to start')
+		]));
 var $author$project$Main$view = function (model) {
 	return {
 		az: _List_fromArray(
@@ -6894,17 +6901,7 @@ var $author$project$Main$view = function (model) {
 				$author$project$Main$cvButton,
 				$author$project$Main$arrow(1),
 				$author$project$Main$arrow(0),
-				(model.e === '?') ? A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('info'),
-						$elm$html$Html$Attributes$class('w3-animate-fading')
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Press a letter to start')
-					])) : $author$project$Main$toMarkdown(model.m),
+				(!$elm$core$Char$isAlpha(model.e)) ? $author$project$Main$viewInfo : $author$project$Main$viewArticle(model.m),
 				$author$project$Main$pageFooter
 			]),
 		aW: 'Arthur Gossuin'

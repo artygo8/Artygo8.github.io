@@ -218,44 +218,46 @@ view model =
         [ cvButton
         , arrow Left
         , arrow Right
-        , if model.letter == '?' then
-            div
-                [ class "info"
-                , class "w3-animate-fading"
-                ]
-                [ text "Press a letter to start" ]
+        , if not (Char.isAlpha model.letter) then
+            viewInfo
 
           else
-            toMarkdown model.content
+            viewArticle model.content
         , pageFooter
         ]
     }
 
 
-myOptions : Options
-myOptions =
-    { githubFlavored = Just { tables = True, breaks = True }
-    , defaultHighlighting = Just "python"
-    , sanitize = False
-    , smartypants = True
-    }
+viewInfo : Html Msg
+viewInfo =
+    div [ class "info w3-animate-fading" ] [ text "Press a letter to start" ]
+
+
+viewArticle : String -> Html Msg
+viewArticle content =
+    div [ class "article" ] [ toMarkdown content ]
 
 
 type alias Options =
-    { githubFlavored :
-        Maybe
-            { tables : Bool
-            , breaks : Bool
-            }
+    { githubFlavored : Maybe { tables : Bool, breaks : Bool }
     , defaultHighlighting : Maybe String
     , sanitize : Bool
     , smartypants : Bool
     }
 
 
+myOptions : Options
+myOptions =
+    { githubFlavored = Just { tables = True, breaks = True }
+    , defaultHighlighting = Nothing
+    , sanitize = False
+    , smartypants = True
+    }
+
+
 toMarkdown : String -> Html Msg
 toMarkdown userInput =
-    Markdown.toHtmlWith myOptions [ class "article" ] userInput
+    Markdown.toHtmlWith myOptions [] userInput
 
 
 cvButton : Html msg
@@ -272,7 +274,8 @@ cvButton =
 
 pageFooter : Html msg
 pageFooter =
-    footer [ class "w3-center w3-padding-32" ]
+    footer
+        [ class "w3-center w3-padding-32" ]
         [ div
             [ class "w3-xlarge w3-section text-decoration-none" ]
             [ faIconLink "fa-github" "https://github.com/Artygo8"
@@ -292,21 +295,20 @@ faIconLink iconName link =
 arrow : Direction -> Html Msg
 arrow dir =
     div [ class "w3-center arrow-button" ]
-        [ div
-            [ onClick (ChangePage dir) ]
-            [ arrowIcon dir ]
+        [ div [ onClick (ChangePage dir) ]
+            [ i
+                [ class ("fa fa-chevron-" ++ directionToText dir)
+                , class ("arrow arrow-" ++ directionToText dir)
+                ]
+                []
+            ]
         ]
 
 
-arrowIcon : Direction -> Html msg
-arrowIcon dir =
+directionToText dir =
     case dir of
         Right ->
-            i
-                [ class "material-icons arrow arrow-right" ]
-                [ text "keyboard_arrow_right" ]
+            "right"
 
         Left ->
-            i
-                [ class "material-icons arrow arrow-left" ]
-                [ text "keyboard_arrow_left" ]
+            "left"
