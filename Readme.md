@@ -1,3 +1,8 @@
 # Elm App
 
-elm make src/HomePage.elm --output elm.js
+```bash
+# to test
+elm-live src/Main.elm -- --output elm.js
+# to make
+elm make src/Main.elm --output elm.js
+```

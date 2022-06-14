@@ -38,12 +38,13 @@ type alias Model =
     , url : Url.Url
     , content : String
     , letter : Char
+    , fromDir : String
     }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( Model key url "" '?'
+    ( Model key url "" '?' "top"
     , Cmd.none
     )
 
@@ -90,6 +91,7 @@ update msg model =
                     ( { model
                         | letter = nextLetter model.letter
                         , content = ""
+                        , fromDir = "right"
                       }
                     , fetchArticle (nextLetter model.letter)
                     )
@@ -98,6 +100,7 @@ update msg model =
                     ( { model
                         | letter = previousLetter model.letter
                         , content = ""
+                        , fromDir = "right"
                       }
                     , fetchArticle (previousLetter model.letter)
                     )
@@ -106,6 +109,7 @@ update msg model =
             ( { model
                 | letter = character
                 , content = ""
+                , fromDir = "bottom"
               }
             , fetchArticle character
             )
@@ -115,6 +119,7 @@ update msg model =
                 ( { model
                     | letter = previousLetter model.letter
                     , content = ""
+                    , fromDir = "left"
                   }
                 , fetchArticle (previousLetter model.letter)
                 )
@@ -123,6 +128,7 @@ update msg model =
                 ( { model
                     | letter = nextLetter model.letter
                     , content = ""
+                    , fromDir = "right"
                   }
                 , fetchArticle (nextLetter model.letter)
                 )
@@ -222,7 +228,7 @@ view model =
             viewInfo
 
           else
-            viewArticle model.content
+            viewArticle model
         , pageFooter
         ]
     }
@@ -233,9 +239,17 @@ viewInfo =
     div [ class "info w3-animate-fading" ] [ text "Press a letter to start" ]
 
 
-viewArticle : String -> Html Msg
-viewArticle content =
-    div [ class "article" ] [ toMarkdown content ]
+viewArticle : Model -> Html Msg
+viewArticle model =
+    div
+        [ class "article"
+        , if String.isEmpty model.content then
+            class ""
+
+          else
+            class ("w3-animate-" ++ model.fromDir)
+        ]
+        [ toMarkdown model.content ]
 
 
 type alias Options =
