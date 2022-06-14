@@ -204,7 +204,10 @@ toKey : String -> Msg
 toKey string =
     case String.uncons string of
         Just ( char, "" ) ->
-            PressedLetter char
+            if 'a' <= char && char <= 'z' then
+                PressedLetter char
+            else
+                PressedLetter ' '
 
         Just ( c, s ) ->
             PressedSpecial (String.fromChar c ++ s)

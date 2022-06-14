@@ -5475,7 +5475,12 @@ var $author$project$Main$toKey = function (string) {
 		if (_v0.a.b === '') {
 			var _v1 = _v0.a;
 			var _char = _v1.a;
-			return $author$project$Main$PressedLetter(_char);
+			return ((_Utils_cmp(
+				_Utils_chr('a'),
+				_char) < 1) && (_Utils_cmp(
+				_char,
+				_Utils_chr('z')) < 1)) ? $author$project$Main$PressedLetter(_char) : $author$project$Main$PressedLetter(
+				_Utils_chr(' '));
 		} else {
 			var _v2 = _v0.a;
 			var c = _v2.a;
