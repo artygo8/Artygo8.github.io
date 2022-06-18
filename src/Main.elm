@@ -206,6 +206,8 @@ toKey string =
         Just ( char, "" ) ->
             if 'a' <= char && char <= 'z' then
                 PressedLetter char
+            else if 'A' <= char && char <= 'Z' then
+                PressedLetter (Char.toLower char)
             else
                 PressedLetter ' '
 

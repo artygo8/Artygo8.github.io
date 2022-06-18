@@ -5469,6 +5469,7 @@ var $elm$core$String$cons = _String_cons;
 var $elm$core$String$fromChar = function (_char) {
 	return A2($elm$core$String$cons, _char, '');
 };
+var $elm$core$Char$toLower = _Char_toLower;
 var $author$project$Main$toKey = function (string) {
 	var _v0 = $elm$core$String$uncons(string);
 	if (_v0.$ === 'Just') {
@@ -5479,8 +5480,13 @@ var $author$project$Main$toKey = function (string) {
 				_Utils_chr('a'),
 				_char) < 1) && (_Utils_cmp(
 				_char,
-				_Utils_chr('z')) < 1)) ? $author$project$Main$PressedLetter(_char) : $author$project$Main$PressedLetter(
-				_Utils_chr(' '));
+				_Utils_chr('z')) < 1)) ? $author$project$Main$PressedLetter(_char) : (((_Utils_cmp(
+				_Utils_chr('A'),
+				_char) < 1) && (_Utils_cmp(
+				_char,
+				_Utils_chr('Z')) < 1)) ? $author$project$Main$PressedLetter(
+				$elm$core$Char$toLower(_char)) : $author$project$Main$PressedLetter(
+				_Utils_chr(' ')));
 		} else {
 			var _v2 = _v0.a;
 			var c = _v2.a;
