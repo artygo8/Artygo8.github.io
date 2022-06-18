@@ -3,7 +3,6 @@ module Main exposing (..)
 import Browser
 import Browser.Events
 import Browser.Navigation as Nav
-import Debug exposing (toString)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -64,7 +63,7 @@ type Msg
     | ChangePage Direction
     | GotArticle (Result Http.Error String)
     | PressedLetter Char
-    | PressedSpecial String
+    | DoNothing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -86,24 +85,26 @@ update msg model =
             ( { model | url = url }, Cmd.none )
 
         ChangePage direction ->
-            case direction of
-                Right ->
-                    ( { model
-                        | letter = nextLetter model.letter
-                        , content = ""
-                        , fromDir = "right"
-                      }
-                    , fetchArticle (nextLetter model.letter)
-                    )
+            let
+                newLetter : Char
+                newLetter =
+                    nextLetter model.letter direction
+            in
+            ( { model
+                | letter = newLetter
+                , content = ""
+                , fromDir = directionToText direction
+              }
+            , fetchArticle newLetter
+            )
 
-                Left ->
-                    ( { model
-                        | letter = previousLetter model.letter
-                        , content = ""
-                        , fromDir = "right"
-                      }
-                    , fetchArticle (previousLetter model.letter)
-                    )
+        GotArticle result ->
+            case result of
+                Ok fullText ->
+                    ( { model | content = fullText }, Cmd.none )
+
+                Err _ ->
+                    ( { model | content = "There was an error retrieving the content corresponding to the letter " ++ String.fromChar model.letter }, Cmd.none )
 
         PressedLetter character ->
             ( { model
@@ -114,59 +115,29 @@ update msg model =
             , fetchArticle character
             )
 
-        PressedSpecial s ->
-            if s == "ArrowLeft" then
-                ( { model
-                    | letter = previousLetter model.letter
-                    , content = ""
-                    , fromDir = "left"
-                  }
-                , fetchArticle (previousLetter model.letter)
-                )
-
-            else if s == "ArrowRight" then
-                ( { model
-                    | letter = nextLetter model.letter
-                    , content = ""
-                    , fromDir = "right"
-                  }
-                , fetchArticle (nextLetter model.letter)
-                )
-
-            else
-                ( model, Cmd.none )
-
-        GotArticle result ->
-            case result of
-                Ok fullText ->
-                    ( { model | content = fullText }, Cmd.none )
-
-                Err _ ->
-                    ( { model | content = "There was an error retrieving the content corresponding to the letter " ++ String.fromChar model.letter }, Cmd.none )
+        DoNothing ->
+            ( model, Cmd.none )
 
 
-nextLetter : Char -> Char
-nextLetter letter =
+nextLetter : Char -> Direction -> Char
+nextLetter letter dir =
+    let
+        ( firstLetter, lastLetter, nextChar ) =
+            case dir of
+                Right ->
+                    ( 'a', 'z', 1 )
+
+                Left ->
+                    ( 'z', 'a', -1 )
+    in
     if Char.isAlpha letter == False then
-        'a'
+        firstLetter
 
-    else if letter == 'z' then
+    else if letter == lastLetter then
         ' '
 
     else
-        Char.fromCode (Char.toCode letter + 1)
-
-
-previousLetter : Char -> Char
-previousLetter letter =
-    if Char.isAlpha letter == False then
-        'z'
-
-    else if letter == 'a' then
-        ' '
-
-    else
-        Char.fromCode (Char.toCode letter - 1)
+        Char.fromCode (Char.toCode letter + nextChar)
 
 
 fetchArticle : Char -> Cmd Msg
@@ -206,13 +177,22 @@ toKey string =
         Just ( char, "" ) ->
             if 'a' <= char && char <= 'z' then
                 PressedLetter char
+
             else if 'A' <= char && char <= 'Z' then
                 PressedLetter (Char.toLower char)
+
             else
                 PressedLetter ' '
 
         Just ( c, s ) ->
-            PressedSpecial (String.fromChar c ++ s)
+            if (String.fromChar c ++ s) == "ArrowLeft" then
+                ChangePage Left
+
+            else if (String.fromChar c ++ s) == "ArrowRight" then
+                ChangePage Right
+
+            else
+                DoNothing
 
         _ ->
             PressedLetter ' '
@@ -297,18 +277,18 @@ pageFooter =
         [ class "w3-center w3-padding-32" ]
         [ div
             [ class "w3-xlarge w3-section text-decoration-none" ]
-            [ faIconLink "fa-github" "https://github.com/Artygo8"
+            [ faIconLink "github" "https://github.com/Artygo8"
             , text " "
-            , faIconLink "fa-code" "https://www.codingame.com/profile/f47f29046aba3b04ae6401291e49b6246631973"
+            , faIconLink "code" "https://www.codingame.com/profile/f47f29046aba3b04ae6401291e49b6246631973"
             , text " "
-            , faIconLink "fa-linkedin" "https://www.linkedin.com/in/arthur-gossuin-848273105/"
+            , faIconLink "linkedin" "https://www.linkedin.com/in/arthur-gossuin-848273105/"
             ]
         ]
 
 
 faIconLink : String -> String -> Html msg
 faIconLink iconName link =
-    a [ href link ] [ i [ class ("fa w3-hover-opacity " ++ iconName) ] [] ]
+    a [ href link ] [ i [ class ("fa w3-hover-opacity fa-" ++ iconName) ] [] ]
 
 
 arrow : Direction -> Html Msg
@@ -324,6 +304,7 @@ arrow dir =
         ]
 
 
+directionToText : Direction -> String
 directionToText dir =
     case dir of
         Right ->

@@ -5459,12 +5459,15 @@ var $author$project$Main$init = F3(
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Main$ChangePage = function (a) {
+	return {$: 'ChangePage', a: a};
+};
+var $author$project$Main$DoNothing = {$: 'DoNothing'};
+var $author$project$Main$Left = {$: 'Left'};
 var $author$project$Main$PressedLetter = function (a) {
 	return {$: 'PressedLetter', a: a};
 };
-var $author$project$Main$PressedSpecial = function (a) {
-	return {$: 'PressedSpecial', a: a};
-};
+var $author$project$Main$Right = {$: 'Right'};
 var $elm$core$String$cons = _String_cons;
 var $elm$core$String$fromChar = function (_char) {
 	return A2($elm$core$String$cons, _char, '');
@@ -5491,10 +5494,11 @@ var $author$project$Main$toKey = function (string) {
 			var _v2 = _v0.a;
 			var c = _v2.a;
 			var s = _v2.b;
-			return $author$project$Main$PressedSpecial(
-				_Utils_ap(
-					$elm$core$String$fromChar(c),
-					s));
+			return (_Utils_ap(
+				$elm$core$String$fromChar(c),
+				s) === 'ArrowLeft') ? $author$project$Main$ChangePage($author$project$Main$Left) : ((_Utils_ap(
+				$elm$core$String$fromChar(c),
+				s) === 'ArrowRight') ? $author$project$Main$ChangePage($author$project$Main$Right) : $author$project$Main$DoNothing);
 		}
 	} else {
 		return $author$project$Main$PressedLetter(
@@ -5908,6 +5912,13 @@ var $elm$browser$Browser$Events$on = F3(
 var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
 var $author$project$Main$subscriptions = function (model) {
 	return $elm$browser$Browser$Events$onKeyDown($author$project$Main$keyDecoder);
+};
+var $author$project$Main$directionToText = function (dir) {
+	if (dir.$ === 'Right') {
+		return 'right';
+	} else {
+		return 'left';
+	}
 };
 var $author$project$Main$GotArticle = function (a) {
 	return {$: 'GotArticle', a: a};
@@ -6574,18 +6585,30 @@ var $author$project$Main$fetchArticle = function (letter) {
 };
 var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$core$Char$fromCode = _Char_fromCode;
-var $author$project$Main$nextLetter = function (letter) {
-	return (!$elm$core$Char$isAlpha(letter)) ? _Utils_chr('a') : (_Utils_eq(
-		letter,
-		_Utils_chr('z')) ? _Utils_chr(' ') : $elm$core$Char$fromCode(
-		$elm$core$Char$toCode(letter) + 1));
+var $elm$core$Basics$negate = function (n) {
+	return -n;
 };
-var $author$project$Main$previousLetter = function (letter) {
-	return (!$elm$core$Char$isAlpha(letter)) ? _Utils_chr('z') : (_Utils_eq(
-		letter,
-		_Utils_chr('a')) ? _Utils_chr(' ') : $elm$core$Char$fromCode(
-		$elm$core$Char$toCode(letter) - 1));
-};
+var $author$project$Main$nextLetter = F2(
+	function (letter, dir) {
+		var _v0 = function () {
+			if (dir.$ === 'Right') {
+				return _Utils_Tuple3(
+					_Utils_chr('a'),
+					_Utils_chr('z'),
+					1);
+			} else {
+				return _Utils_Tuple3(
+					_Utils_chr('z'),
+					_Utils_chr('a'),
+					-1);
+			}
+		}();
+		var firstLetter = _v0.a;
+		var lastLetter = _v0.b;
+		var nextChar = _v0.c;
+		return (!$elm$core$Char$isAlpha(letter)) ? firstLetter : (_Utils_eq(letter, lastLetter) ? _Utils_chr(' ') : $elm$core$Char$fromCode(
+			$elm$core$Char$toCode(letter) + nextChar));
+	});
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
@@ -6665,58 +6688,17 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'ChangePage':
 				var direction = msg.a;
-				if (direction.$ === 'Right') {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								content: '',
-								fromDir: 'right',
-								letter: $author$project$Main$nextLetter(model.letter)
-							}),
-						$author$project$Main$fetchArticle(
-							$author$project$Main$nextLetter(model.letter)));
-				} else {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								content: '',
-								fromDir: 'right',
-								letter: $author$project$Main$previousLetter(model.letter)
-							}),
-						$author$project$Main$fetchArticle(
-							$author$project$Main$previousLetter(model.letter)));
-				}
-			case 'PressedLetter':
-				var character = msg.a;
+				var newLetter = A2($author$project$Main$nextLetter, model.letter, direction);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{content: '', fromDir: 'bottom', letter: character}),
-					$author$project$Main$fetchArticle(character));
-			case 'PressedSpecial':
-				var s = msg.a;
-				return (s === 'ArrowLeft') ? _Utils_Tuple2(
-					_Utils_update(
-						model,
 						{
 							content: '',
-							fromDir: 'left',
-							letter: $author$project$Main$previousLetter(model.letter)
+							fromDir: $author$project$Main$directionToText(direction),
+							letter: newLetter
 						}),
-					$author$project$Main$fetchArticle(
-						$author$project$Main$previousLetter(model.letter))) : ((s === 'ArrowRight') ? _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							content: '',
-							fromDir: 'right',
-							letter: $author$project$Main$nextLetter(model.letter)
-						}),
-					$author$project$Main$fetchArticle(
-						$author$project$Main$nextLetter(model.letter))) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none));
-			default:
+					$author$project$Main$fetchArticle(newLetter));
+			case 'GotArticle':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var fullText = result.a;
@@ -6734,13 +6716,17 @@ var $author$project$Main$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
+			case 'PressedLetter':
+				var character = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{content: '', fromDir: 'bottom', letter: character}),
+					$author$project$Main$fetchArticle(character));
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$Left = {$: 'Left'};
-var $author$project$Main$Right = {$: 'Right'};
-var $author$project$Main$ChangePage = function (a) {
-	return {$: 'ChangePage', a: a};
-};
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -6750,13 +6736,6 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $author$project$Main$directionToText = function (dir) {
-	if (dir.$ === 'Right') {
-		return 'right';
-	} else {
-		return 'left';
-	}
-};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$i = _VirtualDom_node('i');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -6868,7 +6847,7 @@ var $author$project$Main$faIconLink = F2(
 					$elm$html$Html$i,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('fa w3-hover-opacity ' + iconName)
+							$elm$html$Html$Attributes$class('fa w3-hover-opacity fa-' + iconName)
 						]),
 					_List_Nil)
 				]));
@@ -6890,11 +6869,11 @@ var $author$project$Main$pageFooter = A2(
 				]),
 			_List_fromArray(
 				[
-					A2($author$project$Main$faIconLink, 'fa-github', 'https://github.com/Artygo8'),
+					A2($author$project$Main$faIconLink, 'github', 'https://github.com/Artygo8'),
 					$elm$html$Html$text(' '),
-					A2($author$project$Main$faIconLink, 'fa-code', 'https://www.codingame.com/profile/f47f29046aba3b04ae6401291e49b6246631973'),
+					A2($author$project$Main$faIconLink, 'code', 'https://www.codingame.com/profile/f47f29046aba3b04ae6401291e49b6246631973'),
 					$elm$html$Html$text(' '),
-					A2($author$project$Main$faIconLink, 'fa-linkedin', 'https://www.linkedin.com/in/arthur-gossuin-848273105/')
+					A2($author$project$Main$faIconLink, 'linkedin', 'https://www.linkedin.com/in/arthur-gossuin-848273105/')
 				]))
 		]));
 var $author$project$Main$myOptions = {
