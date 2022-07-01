@@ -6809,7 +6809,7 @@ var $author$project$Main$cvButton = A2(
 			$elm$html$Html$a,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$href('../files/CV_ARTHUR_GOSSUIN.pdf')
+					$elm$html$Html$Attributes$href('../files/CV_ARTHUR_GOSSUIN_JUNE2022.pdf')
 				]),
 			_List_fromArray(
 				[
