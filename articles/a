@@ -12,12 +12,11 @@ Here is an example of a very simple sorting algorithm.
 
 ```python
 def bubbleSort(lst):
-    n = len(lst) - 1
-    while n:
-        for i in range(n):
-            if lst[i] > lst[i + 1]:
+    for n in range(len(lst), 1, -1):
+        for i in range(n-1):
+            is_ordered = lst[i] < lst[i + 1]
+            if not is_ordered:
                 lst[i], lst[i + 1] = lst[i + 1], lst[i]
-        n -= 1
     return lst
 ```
 
