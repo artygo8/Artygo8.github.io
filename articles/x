@@ -1,5 +1,0 @@
-# XML
-
-In my work, I became an expert of XML handling in Python. [lxml](https://lxml.de/) has no secret for me.
-
-Lately, I have been working on a Peppol Integration for my employer, with [AS4](https://en.wikipedia.org/wiki/AS4) management. AS4 is an exchange protocol for sending and encrypting SOAP with attachments.

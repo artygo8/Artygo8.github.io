@@ -1,8 +1,6 @@
-# Music
+# Radiohead 📻
 
-I took piano lessons for 8 years, and guitar lessons a bit less.
-
-My favorite band of all time is Radiohead.
+... My favorite band of all time is Radiohead.
 
 Here is one of my favorite songs featuring my favorite guitar:
 

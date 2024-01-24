@@ -144,7 +144,7 @@ fetchArticle : Char -> Cmd Msg
 fetchArticle letter =
     if letter >= 'a' && letter <= 'z' then
         Http.get
-            { url = "/articles/" ++ String.fromChar letter
+            { url = "/articles/" ++ String.fromChar letter ++ ".md"
             , expect = Http.expectString GotArticle
             }
 
@@ -221,7 +221,7 @@ view model =
 
 viewInfo : Html Msg
 viewInfo =
-    div [ class "info w3-animate-fading" ] [ text "Press a letter to start" ]
+    div [ class "info" ] [ text "Press a letter to start" ]
 
 
 viewArticle : Model -> Html Msg
