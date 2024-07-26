@@ -221,7 +221,7 @@ view model =
 
 viewInfo : Html Msg
 viewInfo =
-    div [ class "info" ] [ text "Press a letter to start" ]
+    div [ class "info" ] [ text "Press any letter to start" ]
 
 
 viewArticle : Model -> Html Msg
