@@ -262,7 +262,7 @@ toMarkdown userInput =
 cvButton : Html msg
 cvButton =
     div [ class "download-button" ]
-        [ a [ href "../files/CV_ARTHUR_GOSSUIN_JAN23.pdf" ]
+        [ a [ href "../files/CV_Arthur_Gossuin_NOV26.pdf" ]
             [ div [ style "text-decoration" "none" ]
                 [ i [ class "fa fa-file-text w3-margin-right" ] []
                 , text "click for résumé"
